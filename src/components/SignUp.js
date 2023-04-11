@@ -21,7 +21,8 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import StepConnector from "@mui/material/StepConnector";
-import ErrorIcon from '@mui/icons-material/Error';
+import ErrorIcon from "@mui/icons-material/Error";
+import { StyledLink } from "../styled-components";
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -35,7 +36,7 @@ function TabPanel(props) {
             {...other}
         >
             {value === index && (
-                <Box sx={{ p: 3 }}>
+                <Box sx={{ p: 1 }}>
                     <Typography>{children}</Typography>
                 </Box>
             )}
@@ -61,9 +62,9 @@ const SignUp = () => {
     const {
         register,
         handleSubmit,
-        formState: { errors,isValid },
+        formState: { errors, isValid },
     } = useForm({
-        defaultValues: {    
+        defaultValues: {
             name: "",
             email: "",
         },
@@ -301,7 +302,7 @@ const SignUp = () => {
     };
     const handleNext = () => {
         handleSubmit(onSubmit);
-        if(Object.keys(errors).length!=0){
+        if (Object.keys(errors).length != 0) {
             console.log("kfsabuhfis");
             return;
         }
@@ -310,7 +311,7 @@ const SignUp = () => {
     const onSubmit = (data) => {
         console.log(errors);
         console.log(data);
-    }
+    };
     const steps = ["Enter Bussiness Details", "Enter Address"];
     function a11yProps(index) {
         return {
@@ -460,23 +461,6 @@ const SignUp = () => {
                                 >
                                     Sign Up
                                 </Button>
-                                <Grid
-                                    container
-                                    sx={{
-                                        justifyContent: "space-between",
-                                        mt: 3,
-                                    }}
-                                >
-                                    <Typography
-                                        variant="body2"
-                                        component="span"
-                                    >
-                                        already have an account?
-                                    </Typography>
-                                    <Link href="#" underline="hover">
-                                        Log In
-                                    </Link>
-                                </Grid>
                             </Box>
                         </TabPanel>
                         <TabPanel value={value} index={1}>
@@ -487,15 +471,16 @@ const SignUp = () => {
                                 {steps.map((label, index) => {
                                     const stepProps = {};
                                     const labelProps = {};
-                                    if(activeStep==index){
-                                        if(Object.keys(errors).length!=0) {
-                                            labelProps.icon = <ErrorIcon/>
+                                    if (activeStep == index) {
+                                        if (Object.keys(errors).length != 0) {
+                                            labelProps.icon = <ErrorIcon />;
                                         }
                                     }
                                     return (
-                                        <Step key={label} {...stepProps} >
-                                            <StepLabel {...labelProps} color="red" 
-                                        
+                                        <Step key={label} {...stepProps}>
+                                            <StepLabel
+                                                {...labelProps}
+                                                color="red"
                                             >
                                                 {label}
                                             </StepLabel>
@@ -542,32 +527,36 @@ const SignUp = () => {
                                                 variant="contained"
                                                 onClick={handleNext}
                                                 key="NextButton"
-                                            >Next</Button>
+                                            >
+                                                Next
+                                            </Button>
                                         ) : (
                                             <Button
                                                 variant="contained"
                                                 onClick={handleSubmit(onSubmit)}
                                                 key="signUpButton"
-                                            >Sign Up</Button>
+                                            >
+                                                Sign Up
+                                            </Button>
                                         )}
                                     </Grid>
                                 </Grid>
-                                <Grid
-                                    container
-                                    sx={{
-                                        justifyContent: "space-between",
-                                        mt: 3,
-                                    }}
-                                >
-                                    <Typography variant="body2">
-                                        already have an account?
-                                    </Typography>
-                                    <Link href="#" underline="hover">
-                                        Log In
-                                    </Link>
-                                </Grid>
                             </Box>
                         </TabPanel>
+                        <Grid
+                            container
+                            sx={{
+                                justifyContent: "space-between",
+                                mt: 3,
+                            }}
+                        >
+                            <Typography variant="body2">
+                                already have an account?
+                            </Typography>
+                            <StyledLink to="/login">
+                                <Link underline="hover">Log In</Link>
+                            </StyledLink>
+                        </Grid>
                     </Box>
                 </LoginPaper>
             </Box>

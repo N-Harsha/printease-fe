@@ -7,12 +7,13 @@ import { Provider } from "react-redux";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { primaryColor } from "./constants";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { BrowserRouter } from "react-router-dom";
 
 const theme = createTheme({
     palette: {
         primary: {
-          main:primaryColor,
-          contrastText:"white"
+            main: primaryColor,
+            contrastText: "white",
         },
     },
 });
@@ -26,14 +27,15 @@ const queryClient = new QueryClient({
     },
 });
 
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
     <Provider store={store}>
         <ThemeProvider theme={theme}>
             <QueryClientProvider client={queryClient}>
                 <React.StrictMode>
-                    <App />
+                    <BrowserRouter>
+                        <App />
+                    </BrowserRouter>
                 </React.StrictMode>
             </QueryClientProvider>
         </ThemeProvider>

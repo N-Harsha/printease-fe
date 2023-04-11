@@ -18,10 +18,12 @@ import { useMutation } from "react-query";
 import { api } from "../utils/APIMethods";
 import { loginApi } from "../constants";
 import Snackbar from "@mui/material/Snackbar";
-import Slide from "@mui/material/Slide";
 import MuiAlert from "@mui/material/Alert";
 import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
+import { StyledLink } from "../styled-components";
+import { login } from "./../features/Login.reducer";
+import { useNavigate } from "react-router-dom";
+import { useDispatch,useSelector } from "react-redux";
 
 const LoginPaper = styled(Paper)`
     max-width: 380px;
@@ -35,6 +37,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const Login = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const {
         register,
         handleSubmit,
@@ -46,14 +50,21 @@ const Login = () => {
         },
     });
     const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState({});
 
     const { mutate, isLoading } = useMutation("LoginMutatation", {
         mutationFn: (body) => {
             api({ loginApi, method: "POST", body: body });
         },
-        onSuccess: () => {},
+        onSuccess: (data) => {
+            setMessage({ message: "LoginSuccessfully", severity: "success" });
+            setOpen(true);
+            navigate("/dashboard");
+            dispatch(login(data));
+        },
         onError: (error) => {
-            console.log(error);
+            setMessage({ message: error.message, severity: "error" });
+            setOpen(true);
         },
     });
 
@@ -62,8 +73,9 @@ const Login = () => {
     };
 
     const onSubmit = (data) => {
-        setOpen(true);
-        //mutate(data);
+        // setOpen(true);
+        // navigate("/dashboard");
+        mutate(data);
     };
 
     return (
@@ -77,13 +89,13 @@ const Login = () => {
                 message="I love snacks"
                 key={"top" + "center"}
             >
-                    <Alert
-                        severity="success"
-                        sx={{ width: "100%" }}
-                        icon={<CheckIcon fontSize="inherit" />}
-                    >
-                        This is a success message!
-                    </Alert>
+                <Alert
+                    severity="success"
+                    sx={{ width: "100%" }}
+                    icon={<CheckIcon fontSize="inherit" />}
+                >
+                    {message}
+                </Alert>
             </Snackbar>
             <Container>
                 <LoginPaper elevation={3}>
@@ -166,9 +178,9 @@ const Login = () => {
                             <Typography variant="body2">
                                 Don`t have an account?
                             </Typography>
-                            <Link href="#" underline="hover">
-                                Sign Up
-                            </Link>
+                            <StyledLink to="/signup">
+                                <Link underline="hover">Sign Up</Link>
+                            </StyledLink>
                         </Grid>
                     </Box>
                 </LoginPaper>
