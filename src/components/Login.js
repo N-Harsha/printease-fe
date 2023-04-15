@@ -19,11 +19,10 @@ import { api } from "../utils/APIMethods";
 import { loginApi } from "../constants";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
-import CheckIcon from "@mui/icons-material/Check";
 import { StyledLink } from "../styled-components";
 import { login } from "./../features/Login.reducer";
 import { useNavigate } from "react-router-dom";
-import { useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const LoginPaper = styled(Paper)`
     max-width: 380px;
@@ -54,13 +53,17 @@ const Login = () => {
 
     const { mutate, isLoading } = useMutation("LoginMutatation", {
         mutationFn: (body) => {
-            api({ loginApi, method: "POST", body: body });
+            return api({ url: loginApi, method: "POST", body: body });
         },
         onSuccess: (data) => {
-            setMessage({ message: "LoginSuccessfully", severity: "success" });
+            console.log("SUCSSSSSS");
+            setMessage({
+                message: "Logged in  Successfully",
+                severity: "success",
+            });
             setOpen(true);
-            navigate("/dashboard");
             dispatch(login(data));
+            navigate("/dashboard");
         },
         onError: (error) => {
             setMessage({ message: error.message, severity: "error" });
@@ -73,9 +76,9 @@ const Login = () => {
     };
 
     const onSubmit = (data) => {
+        mutate(data);
         // setOpen(true);
         // navigate("/dashboard");
-        mutate(data);
     };
 
     return (
@@ -86,15 +89,14 @@ const Login = () => {
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
                 open={open}
                 onClose={() => setOpen(false)}
-                message="I love snacks"
                 key={"top" + "center"}
             >
                 <Alert
-                    severity="success"
+                    severity={message.severity}
                     sx={{ width: "100%" }}
-                    icon={<CheckIcon fontSize="inherit" />}
+                    // icon={<CheckIcon fontSize="inherit" />}
                 >
-                    {message}
+                    {message.message}
                 </Alert>
             </Snackbar>
             <Container>

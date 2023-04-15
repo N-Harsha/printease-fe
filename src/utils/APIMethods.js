@@ -9,7 +9,7 @@ async function checkError(response) {
 const generateHeaders = (authConfig, requestHeaders, isFormData) => {
     const headers = new Headers();
     if (authConfig) {
-        headers.append("Authorization", `${authConfig.accessToken}`);
+        headers.append("Authorization", `Bearer ${authConfig.token}`);
     }
     if (!isFormData) {
         headers.append("Content-Type", "application/json");
