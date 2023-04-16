@@ -9,12 +9,17 @@ import { primaryColor } from "./constants";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
 
+const { palette } = createTheme();
+const { augmentColor } = palette;
+const createColor = (mainColor) => augmentColor({ color: { main: mainColor } });
 const theme = createTheme({
     palette: {
         primary: {
             main: primaryColor,
             contrastText: "white",
         },
+        delete: createColor("#F40B27"),
+        edit: createColor("#ffc107"),
     },
 });
 

@@ -81,11 +81,12 @@ const Dashboard = () => {
                                             variant="contained"
                                             sx={{
                                                 position: "absolute",
-                                                bottom: "16px",
+                                                bottom: "12px",
+                                                right:"12px"
                                             }}
                                             onClick={() => {navigate(`/service/${service.id}`)}}
                                         >
-                                            Show
+                                            Edit
                                         </Button>
                                     </Paper>
                                 </Grid>
