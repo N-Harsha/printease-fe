@@ -1,13 +1,13 @@
 import {
-    Avatar,
-    Box,
-    Button,
-    Container,
-    Grid,
-    Link,
-    Paper,
-    TextField,
-    Typography,
+  Avatar,
+  Box,
+  Button,
+  Container,
+  Grid,
+  Link,
+  Paper,
+  TextField,
+  Typography,
 } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
@@ -25,170 +25,156 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 const LoginPaper = styled(Paper)`
-    max-width: 380px;
-    height: fit-content;
-    padding: 80px 40px 30px;
-    margin: 120px auto;
-    position: relative;
+  max-width: 380px;
+  height: fit-content;
+  padding: 80px 40px 30px;
+  margin: 120px auto;
+  position: relative;
 `;
 const Alert = React.forwardRef(function Alert(props, ref) {
-    return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 const Login = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const {
-        register,
-        handleSubmit,
-        formState: { errors, isValid, isDirty },
-    } = useForm({
-        defaultValues: {
-            email: "",
-            password: "",
-        },
-    });
-    const [open, setOpen] = useState(false);
-    const [message, setMessage] = useState({});
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid, isDirty },
+  } = useForm({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState({});
 
-    const { mutate, isLoading } = useMutation("LoginMutatation", {
-        mutationFn: (body) => {
-            return api({ url: loginApi, method: "POST", body: body });
-        },
-        onSuccess: (data) => {
-            console.log("SUCSSSSSS");
-            setMessage({
-                message: "Logged in  Successfully",
-                severity: "success",
-            });
-            setOpen(true);
-            dispatch(login(data));
-            navigate("/dashboard");
-        },
-        onError: (error) => {
-            setMessage({ message: error.message, severity: "error" });
-            setOpen(true);
-        },
-    });
+  const { mutate, isLoading } = useMutation("LoginMutatation", {
+    mutationFn: (body) => {
+      return api({ url: loginApi, method: "POST", body: body });
+    },
+    onSuccess: (data) => {
+      setMessage({
+        message: "Logged in  Successfully",
+        severity: "success",
+      });
+      setOpen(true);
+      dispatch(login(data));
+      navigate("/dashboard");
+    },
+    onError: (error) => {
+      setMessage({ message: error.message, severity: "error" });
+      setOpen(true);
+    },
+  });
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-    const onSubmit = (data) => {
-        mutate(data);
-        // setOpen(true);
-        // navigate("/dashboard");
-    };
+  const onSubmit = (data) => {
+    mutate(data);
+    // setOpen(true);
+    // navigate("/dashboard");
+  };
 
-    return (
-        <>
-            {isLoading && <LinearProgress />}
-            <Snackbar
-                autoHideDuration={1400}
-                anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                open={open}
-                onClose={() => setOpen(false)}
-                key={"top" + "center"}
+  return (
+    <>
+      {isLoading && <LinearProgress />}
+      <Snackbar
+        autoHideDuration={1400}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={open}
+        onClose={() => setOpen(false)}
+        key={"top" + "center"}
+      >
+        <Alert
+          severity={message.severity}
+          sx={{ width: "100%" }}
+          // icon={<CheckIcon fontSize="inherit" />}
+        >
+          {message.message}
+        </Alert>
+      </Snackbar>
+      <Container>
+        <LoginPaper elevation={3}>
+          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
+            <Typography
+              component="h1"
+              variant="h4"
+              sx={{ mb: 2, textAlign: "center" }}
             >
-                <Alert
-                    severity={message.severity}
-                    sx={{ width: "100%" }}
-                    // icon={<CheckIcon fontSize="inherit" />}
-                >
-                    {message.message}
-                </Alert>
-            </Snackbar>
-            <Container>
-                <LoginPaper elevation={3}>
-                    <Box
-                        component="form"
-                        onSubmit={handleSubmit(onSubmit)}
-                        noValidate
-                    >
-                        <Typography
-                            component="h1"
-                            variant="h4"
-                            sx={{ mb: 2, textAlign: "center" }}
-                        >
-                            Log in
-                        </Typography>
+              Log in
+            </Typography>
 
-                        <Avatar
-                            src={logo}
-                            sx={{
-                                position: "absolute",
-                                top: "-60px",
-                                left: "calc(50% - 60px)",
-                                width: "120px",
-                                height: "120px",
-                            }}
-                        ></Avatar>
-                        <TextField
-                            error={errors.hasOwnProperty("email")}
-                            helperText={
-                                errors.hasOwnProperty("email")
-                                    ? "Enter valid email"
-                                    : ""
-                            }
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            autoComplete="email"
-                            variant="filled"
-                            autoFocus
-                            {...register("email", {
-                                required: true,
-                                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                            })}
-                        />
-                        <TextField
-                            error={errors.hasOwnProperty("password")}
-                            helperText={
-                                errors.hasOwnProperty("password")
-                                    ? "Enater valid Password"
-                                    : ""
-                            }
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="password"
-                            label="Password"
-                            autoComplete="password"
-                            variant="filled"
-                            type="password"
-                            {...register("password", {
-                                required: true,
-                                minLength: 8,
-                            })}
-                        />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 6, mb: 0, height: "50px" }}
-                            disabled={isLoading}
-                        >
-                            Log In
-                        </Button>
-                        <Grid
-                            container
-                            sx={{ justifyContent: "space-between", mt: 3 }}
-                        >
-                            <Typography variant="body2">
-                                Don`t have an account?
-                            </Typography>
-                            <StyledLink to="/signup">
-                                <Link underline="hover">Sign Up</Link>
-                            </StyledLink>
-                        </Grid>
-                    </Box>
-                </LoginPaper>
-            </Container>
-        </>
-    );
+            <Avatar
+              src={logo}
+              sx={{
+                position: "absolute",
+                top: "-60px",
+                left: "calc(50% - 60px)",
+                width: "120px",
+                height: "120px",
+              }}
+            ></Avatar>
+            <TextField
+              error={errors.hasOwnProperty("email")}
+              helperText={
+                errors.hasOwnProperty("email") ? "Enter valid email" : ""
+              }
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              autoComplete="email"
+              variant="filled"
+              autoFocus
+              {...register("email", {
+                required: true,
+                pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              })}
+            />
+            <TextField
+              error={errors.hasOwnProperty("password")}
+              helperText={
+                errors.hasOwnProperty("password") ? "Enater valid Password" : ""
+              }
+              margin="normal"
+              required
+              fullWidth
+              id="password"
+              label="Password"
+              autoComplete="password"
+              variant="filled"
+              type="password"
+              {...register("password", {
+                required: true,
+                minLength: 8,
+              })}
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 6, mb: 0, height: "50px" }}
+              disabled={isLoading}
+            >
+              Log In
+            </Button>
+            <Grid container sx={{ justifyContent: "space-between", mt: 3 }}>
+              <Typography variant="body2">Don`t have an account?</Typography>
+              <StyledLink to="/signup">
+                <Link underline="hover">Sign Up</Link>
+              </StyledLink>
+            </Grid>
+          </Box>
+        </LoginPaper>
+      </Container>
+    </>
+  );
 };
 
 export default Login;
