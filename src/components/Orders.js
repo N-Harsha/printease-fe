@@ -73,10 +73,6 @@ export default function CustomizedTables() {
     }
   );
 
-  React.useEffect(() => {
-    refetch();
-  }, [user]);
-
   const mappedData = data?.map((row) =>
     createData(
       row.id,
@@ -91,9 +87,7 @@ export default function CustomizedTables() {
 
   const handleOnClick = (id) => {
     return () => {
-      const orderDetail = data?.find((item) => item.id === id);
-      //   console.log(res);
-      navigate(`/orders/${id}`, { state: { orderDetail } });
+      navigate(`/orders/${id}`);
     };
   };
 
@@ -145,7 +139,7 @@ export default function CustomizedTables() {
                       <Paper
                         elevation={10}
                         sx={{
-                          backgroundColor: getColor(row.status),
+                          backgroundColor: getColor(row.status, isLightTheme),
                           color: isLightTheme ? "white" : "black",
                           fontWeight: "700",
                           p: 1,

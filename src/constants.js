@@ -13,3 +13,9 @@ export const customerRole = "ROLE_CUSTOMER";
 export const adminRole = "ROLE_ADMIN";
 
 export const statusList = ["Pending", "Accepted", "In Progress", "Completed"];
+
+export const promoteOrderStatusApi = (id) =>
+  baseUrl + `/v1/orders/${id}/promote`;
+export const cancelOrderStatusApi = (id) => baseUrl + `/v1/orders/${id}/cancel`;
+
+export const specificOrderDetailsApi = (id) => baseUrl + `/v1/orders/${id}`;

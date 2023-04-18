@@ -1,3 +1,4 @@
+import { useTheme } from "styled-components";
 import { customerRole, statusList } from "../constants";
 
 export function formatDate(isoDateString, giveLineBreak = true) {
@@ -19,13 +20,15 @@ export function formatDate(isoDateString, giveLineBreak = true) {
   );
 }
 
-export const getColor = (status) => {
+export const getColor = (status, isLightTheme) => {
   switch (status) {
     case "Pending":
       return "info.main";
     case "Accepted":
     case "In Progress":
       return "success.main";
+    case "Completed":
+      return isLightTheme ? "black" : "white";
     case "Rejected":
     case "Cancelled":
       return "error.main";
