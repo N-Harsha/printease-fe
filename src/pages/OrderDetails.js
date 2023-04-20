@@ -15,11 +15,11 @@ import {
   nextStatus,
   showActions,
 } from "../utils/util";
-import GridItem from "./GridItem";
+import GridItem from "../components/GridItem";
 import { useSelector } from "react-redux";
 import { selectIsLightTheme } from "../features/Theme.reducer";
 import { auth } from "../features/Login.reducer";
-import OrderStatusLog from "./OrderStatusLog";
+import OrderStatusLog from "../components/OrderStatusLog";
 import { useMutation, useQuery } from "react-query";
 import {
   cancelOrderStatusApi,
@@ -115,7 +115,7 @@ function OrderDetails() {
       ) : (
         <>
           <Typography variant="h5" textAlign={"left"}>
-            Order Details Page
+            Order Details
           </Typography>
           <Paper elevation={5}>
             <Grid container p={2} pt={0} mt={2} rowSpacing={3}>

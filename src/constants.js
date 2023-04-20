@@ -19,3 +19,13 @@ export const promoteOrderStatusApi = (id) =>
 export const cancelOrderStatusApi = (id) => baseUrl + `/v1/orders/${id}/cancel`;
 
 export const specificOrderDetailsApi = (id) => baseUrl + `/v1/orders/${id}`;
+
+export const getAssociatedServicesApi = baseUrl + "/v1/associatedServices";
+
+export const createAssociatedServiceApi = (printServiceId) =>
+  baseUrl + `/v1/associatedServices?printServiceId=${printServiceId}`;
+
+export const editAssociatedServiceApi = baseUrl + `/v1/associatedServices`;
+
+export const deleteAssociatedServiceApi = (associatedServiceId) =>
+  baseUrl + `/v1/associatedServices/${associatedServiceId}`;

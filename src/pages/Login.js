@@ -20,7 +20,7 @@ import { loginApi } from "../constants";
 import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import { StyledLink } from "../styled-components";
-import { login } from "./../features/Login.reducer";
+import { login } from "../features/Login.reducer";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 

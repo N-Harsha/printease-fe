@@ -10,6 +10,9 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { BrowserRouter } from "react-router-dom";
 import { LinearProgress } from "@mui/material";
 
+const { palette } = createTheme();
+const { augmentColor } = palette;
+const createColor = (mainColor) => augmentColor({ color: { main: mainColor } });
 const theme = createTheme({
   palette: {
     primary: {

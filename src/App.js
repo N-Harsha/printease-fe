@@ -10,20 +10,17 @@ import { Box, CssBaseline, styled } from "@mui/material";
 import { lazy } from "react";
 
 import MenuDrawer from "./components/MenuDrawer";
-import { drawerWidth } from "./constants";
+import { drawerWidth, serviceProviderRole } from "./constants";
 import { auth } from "./features/Login.reducer";
-import OrderDetails from "./components/OrderDetails";
+import PrivateRoutes from "./utils/PrivateRoutes";
 
-const PrivateRoute = (props) => {
-  return <Route {...props} />;
-};
-
-const Login = lazy(() => import("./components/Login"));
-const SignUp = lazy(() => import("./components/SignUp"));
+const Login = lazy(() => import("./pages/Login"));
+const SignUp = lazy(() => import("./pages/SignUp"));
 const Home = lazy(() => import("./components/Home"));
-const Dashboard = lazy(() => import("./components/Dashboard"));
-const Service = lazy(() => import("./components/Service"));
-const Orders = lazy(() => import("./components/Orders"));
+const Services = lazy(() => import("./pages/Services"));
+const ServiceConfig = lazy(() => import("./pages/ServiceConfig"));
+const Orders = lazy(() => import("./pages/Orders"));
+const OrderDetails = lazy(() => import("./pages/OrderDetails"));
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -67,13 +64,18 @@ function App() {
             <MenuDrawer handleDrawerClose={handleDrawerClose} open={open} />
             <Main open={open}>
               <Routes>
-                <Route path="/login" Component={Login} />
-                <Route path="/signup" Component={SignUp} />
-                <Route path="/dashboard" Component={Dashboard} />
-                <Route path="/service/:id" Component={Service} />
-                <Route path="/orders" Component={Orders} />
-                <Route path="/orders/:id" Component={OrderDetails} />
-                <Route path="/" Component={Home} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<SignUp />} />
+                <Route element={<PrivateRoutes />}>
+                  <Route path="/dashboard" element={<Home />} />
+                  <Route path="/services" element={<Services />} />
+                  {user.role === serviceProviderRole && (
+                    <Route path="/services/:id" element={<ServiceConfig />} />
+                  )}
+                  <Route path="/orders" element={<Orders />} />
+                  <Route path="/orders/:id" element={<OrderDetails />} />
+                  <Route path="/" element={<Home />} />
+                </Route>
               </Routes>
             </Main>
           </Box>

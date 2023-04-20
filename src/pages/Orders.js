@@ -98,7 +98,7 @@ export default function CustomizedTables() {
       ) : (
         <>
           <Typography variant="h5" textAlign={"left"} p={2}>
-            Orders Page
+            Orders
           </Typography>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 700 }} aria-label="customized table">

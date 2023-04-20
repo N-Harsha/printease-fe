@@ -1,6 +1,6 @@
 import { SvgIcon } from "@material-ui/core";
 
-export function OrdersLogo(props) {
+export function OrdersIcon(props) {
   return (
     <SvgIcon {...props}>
       <svg
