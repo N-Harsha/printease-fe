@@ -84,26 +84,6 @@ const Service = () => {
     ]);
 
     
-    // function filter(){
-    //     combinations.filter(combination=>{
-    //         var match  = true;
-    //         if (bindingTypes.length !== 0) {
-    //             match&=bindingTypes.includes(combination.bindingType.type);
-    //         }if (paperSizes.length !== 0) {
-    //              match &= paperSizes.includes(combination.paperSize.type);
-    //         }if (printTypes.length !== 0) {
-    //              match&=printTypes.includes(combination.printType.type);
-    //         }if (printSides.length !== 0) {
-    //              match&=printSides.includes(combination.printSide.type);
-    //         }if (paperTypes.length !== 0) {
-    //              match&=paperTypes.includes(combination.paperType.type);
-    //         }if (orientation.length !== 0) {
-    //              match&=orientation.includes(combination.orientation.type);
-    //         }
-    //         console.log(match);
-    //         return match;
-    //     })
-    // }
     const serviceId = params.id;
    
     const { isLoading: cardsLoading, data: combinations } = useQuery(
@@ -396,16 +376,23 @@ const Service = () => {
                                         p: 1,
                                         mb: 2,
                                         display: "flex",
+                                        justifyContent: "space-between",
                                     }}
                                     key={`Card${combination.id}`}
                                 >
-                                    <Grid container>
+                                    <Grid
+                                        container
+                                        sx={{
+                                            width: "80%",
+                                            justifyContent: "space-between",
+                                        }}
+                                    >
                                         {Object.keys(combination).map(
                                             (combi) => {
                                                 if (!combination[combi])
                                                     return null;
                                                 return (
-                                                    <Grid item ml={3}>
+                                                    <Grid item mx={3}>
                                                         <Typography
                                                             variant="overline"
                                                             sx={{
@@ -432,20 +419,22 @@ const Service = () => {
                                             }
                                         )}
                                     </Grid>
-                                    <Button
-                                        variant="contained"
-                                        sx={{ m: 2 }}
-                                        color="edit"
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        variant="contained"
-                                        sx={{ m: 2 }}
-                                        color="error"
-                                    >
-                                        Delete
-                                    </Button>
+                                    <Box>
+                                        <Button
+                                            variant="contained"
+                                            sx={{ m: 2 }}
+                                            color="edit"
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            sx={{ m: 2 }}
+                                            color="error"
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Box>
                                 </Card>
                             );
                         })}

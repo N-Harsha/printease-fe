@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { auth } from "./../features/Login.reducer";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MenuIcon from "@mui/icons-material/Menu";
 
 function Navbar() {
@@ -90,7 +91,7 @@ function Navbar() {
                     </Box>
                     <Box sx={{ display: { xs: "flex", sm: "none" } }}>
                         <IconButton onClick={handleMenu}>
-                            <MenuIcon />
+                            <MoreVertIcon />
                         </IconButton>
                         <Menu
                             id="basic-menu"
@@ -101,12 +102,10 @@ function Navbar() {
                                 "aria-labelledby": "basic-button",
                             }}
                         >
-                            <MenuItem onClick={handleLogin} >
-                                {login}
-                            </MenuItem>
+                            <MenuItem onClick={handleLogin}>{login}</MenuItem>
                             {!isLoggedIn && (
-                                <MenuItem onClick={()=>navigate("/signup")}>
-                                    Sign In 
+                                <MenuItem onClick={() => navigate("/signup")}>
+                                    Sign In
                                 </MenuItem>
                             )}
                         </Menu>
