@@ -10,7 +10,7 @@ import { Box, CssBaseline, styled } from "@mui/material";
 import { lazy } from "react";
 
 import MenuDrawer from "./components/MenuDrawer";
-import { drawerWidth, serviceProviderRole } from "./constants";
+import { customerRole, drawerWidth, serviceProviderRole } from "./constants";
 import { auth } from "./features/Login.reducer";
 import PrivateRoutes from "./utils/PrivateRoutes";
 
@@ -21,6 +21,8 @@ const Services = lazy(() => import("./pages/Services"));
 const ServiceConfig = lazy(() => import("./pages/ServiceConfig"));
 const Orders = lazy(() => import("./pages/Orders"));
 const OrderDetails = lazy(() => import("./pages/OrderDetails"));
+const NotFoundPage = lazy(() => import("./pages/error/404Page"));
+const PlaceOrder = lazy(() => import("./pages/placeOrder"));
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -74,8 +76,12 @@ function App() {
                   )}
                   <Route path="/orders" element={<Orders />} />
                   <Route path="/orders/:id" element={<OrderDetails />} />
+                  {user.role === customerRole && (
+                    <Route path="/placeOrder" element={<PlaceOrder />} />
+                  )}
                   <Route path="/" element={<Home />} />
                 </Route>
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Main>
           </Box>

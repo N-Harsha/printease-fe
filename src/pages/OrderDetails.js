@@ -28,6 +28,7 @@ import {
 } from "../constants";
 import { api } from "../utils/APIMethods";
 import { useState } from "react";
+import { DownloadTwoTone } from "@mui/icons-material";
 
 function OrderDetails() {
   const [isPromoteRequest, setIsPromoteRequest] = useState(false);
@@ -86,7 +87,7 @@ function OrderDetails() {
           },
           user
         ),
-      onSuccess: (data) => {
+      onSuccess: () => {
         refetch();
       },
     });
@@ -107,7 +108,6 @@ function OrderDetails() {
         refetch();
       },
     });
-
   return (
     <>
       {isLoading || promoteIsLoading || cancelIsLoading ? (
@@ -118,7 +118,7 @@ function OrderDetails() {
             Order Details
           </Typography>
           <Paper elevation={5}>
-            <Grid container p={2} pt={0} mt={2} rowSpacing={3}>
+            <Grid container p={2} pt={0} mt={2} rowSpacing={2}>
               <Grid item xs={12}>
                 <Box
                   sx={{
@@ -129,7 +129,7 @@ function OrderDetails() {
                     Order ID:
                   </Typography>
                   <Typography variant="h4" sx={{ fontSize: { xs: 25 } }}>
-                    {orderDetail.id}
+                    #{" " + orderDetail.id}
                   </Typography>
                 </Box>
               </Grid>
@@ -139,12 +139,12 @@ function OrderDetails() {
                 sx={{ color: "grey" }}
               />
               <GridItem
-                title={"Due Date :"}
+                title={"Due Date:"}
                 value={formatDate(orderDetail.dueDate, false)}
                 sx={{ color: "warning.main" }}
               />
 
-              <GridItem title={"Service :"} value={orderDetail.serviceName} />
+              <GridItem title={"Service:"} value={orderDetail.serviceName} />
 
               {orderDetail.serviceProviderBusinessName && (
                 <GridItem
@@ -166,10 +166,13 @@ function OrderDetails() {
                     orderDetail.orderStatus,
                     isLightTheme
                   ),
+                  userSelect: "none",
                   color: isLightTheme ? "white" : "black",
                   borderRadius: 2,
                   fontWeight: "700",
+                  textAlign: "center",
                   p: 1,
+                  mr: 2,
                 }}
               />
               <GridItem
@@ -178,7 +181,7 @@ function OrderDetails() {
               />
               <GridItem value={orderDetail.quantity} title={" Quantity:"} />
               <GridItem
-                value={"link"}
+                value={<DownloadTwoTone fontSize="large" />}
                 sx={{
                   color: "info.main",
                   textDecoration: "underline",
@@ -201,64 +204,81 @@ function OrderDetails() {
                   </Typography>
                 </Grid>
               )}
-              {showActions(user.role, orderDetail.orderStatus) && (
-                <Grid item xs={12}>
-                  <Box
-                    display={"flex"}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
+              {showActions(user.role, orderDetail.orderStatus) ? (
+                <Grid
+                  item
+                  xs={12}
+                  sx={{
+                    "& button": {
+                      marginLeft: 1,
+                    },
+                  }}
+                  justifyContent={"center"}
+                  display={"flex"}
+                >
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "error.main",
+                      fontWeight: "bold",
+                      color: isLightTheme ? "white" : "black",
+                      boxShadow: 10,
+                      ":hover": {
+                        backgroundColor: "error.dark",
+                      },
+                    }}
+                    onClick={() => orderStatusCancelMutate(orderDetail.id)}
                   >
-                    <Typography
-                      variant="h5"
-                      mr={1}
-                      sx={{ fontSize: { xs: 25 }, textAlign: "left" }}
-                    >
-                      Update Order Status:
-                    </Typography>
-                    <Stack direction={"row"} spacing={2} px={4} py={2}>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "success.light",
-                          fontWeight: "bold",
-                          color: isLightTheme ? "white" : "black",
-                          boxShadow: 10,
-                          ":hover": {
-                            backgroundColor: "success.dark",
-                          },
-                        }}
-                        onClick={() => orderStatusPromoteMutate(orderDetail.id)}
-                      >
-                        {nextStatus(orderDetail.orderStatus)}
-                      </Button>
-                      <Button
-                        variant="contained"
-                        sx={{
-                          backgroundColor: "error.light",
-                          fontWeight: "bold",
-                          color: isLightTheme ? "white" : "black",
-                          boxShadow: 10,
-                          ":hover": {
-                            backgroundColor: "error.dark",
-                          },
-                        }}
-                        onClick={() => orderStatusCancelMutate(orderDetail.id)}
-                      >
-                        {orderDetail.orderStatus === "Pending"
-                          ? "Reject"
-                          : "Cancel"}
-                      </Button>
-                    </Stack>
-                  </Box>
+                    {orderDetail.orderStatus === "Pending"
+                      ? "Reject "
+                      : "Cancel "}
+                    Order
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "success.main",
+                      fontWeight: "bold",
+                      color: isLightTheme ? "white" : "black",
+                      boxShadow: 10,
+                      ":hover": {
+                        backgroundColor: "success.dark",
+                      },
+                    }}
+                    onClick={() => orderStatusPromoteMutate(orderDetail.id)}
+                  >
+                    {nextStatus(orderDetail.orderStatus)}
+                  </Button>
                 </Grid>
+              ) : (
+                (orderDetail.orderStatus === "Pending" ||
+                  orderDetail.orderStatus === "Accepted") && (
+                  <Grid item xs={12} justifyContent={"center"} display={"flex"}>
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "error.main",
+                        color: "white",
+                        fontWeight: "bold",
+                        "&: hover": {
+                          backgroundColor: "error.dark",
+                        },
+                      }}
+                      onClick={() => orderStatusCancelMutate(orderDetail.id)}
+                    >
+                      Cancel Order
+                    </Button>
+                  </Grid>
+                )
               )}
             </Grid>
           </Paper>
           <Typography
-            variant="h4"
+            variant="h5"
             m={2}
             p={2}
-            // sx={{ textDecoration: "underline" }}
+            sx={{ textDecoration: "underline" }}
+            textAlign={"center"}
           >
             Order Status Log
           </Typography>

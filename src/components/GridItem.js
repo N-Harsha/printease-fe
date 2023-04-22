@@ -10,7 +10,7 @@ const GridItem = ({ title, value, sx, onClick }) => {
           mr={1}
           sx={{
             fontSize: { xs: 15, md: 20 },
-            width: { sx: "50%", md: "100%" },
+            width: { sx: "50%", md: "30%" },
           }}
         >
           {title}
@@ -20,7 +20,7 @@ const GridItem = ({ title, value, sx, onClick }) => {
           onClick={onClick}
           sx={{
             fontSize: { xs: 15, md: 20 },
-            width: { sx: "50%", md: "100%" },
+            width: { sx: "50%", md: "70%" },
             ...sx,
           }}
         >

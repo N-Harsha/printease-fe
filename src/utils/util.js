@@ -83,11 +83,11 @@ export function nextStatus(currStatus) {
 const parseStatus = (status) => {
   switch (status) {
     case "Accepted":
-      return "Accept";
+      return "Accept Order";
     case "In Progress":
-      return "Move to In Progress";
+      return "Move Order to In Progress";
     case "Completed":
-      return "Move to Completed";
+      return "Move Order to Completed";
     default:
       return "";
   }

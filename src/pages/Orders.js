@@ -8,14 +8,19 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { useSelector } from "react-redux";
-import { getAllOrdersApi, serviceProviderRole } from "../constants";
+import {
+  customerRole,
+  getAllOrdersApi,
+  serviceProviderRole,
+} from "../constants";
 import { auth } from "../features/Login.reducer";
-import { Button, LinearProgress, Typography } from "@mui/material";
+import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { selectIsLightTheme } from "../features/Theme.reducer";
 import { formatDate, getColor } from "../utils/util";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "react-query";
 import { api } from "../utils/APIMethods";
+import { Inventory2, Inventory2TwoTone } from "@mui/icons-material";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -119,46 +124,59 @@ export default function CustomizedTables() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {mappedData.map((row, index) => (
-                  <StyledTableRow key={index}>
-                    <StyledTableCell>{row.orderId}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.serviceName}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">{row.name}</StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.placedOn}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {row.dueDate}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      ₹ {row.price}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Paper
-                        elevation={10}
-                        sx={{
-                          backgroundColor: getColor(row.status, isLightTheme),
-                          color: isLightTheme ? "white" : "black",
-                          fontWeight: "700",
-                          p: 1,
-                        }}
-                      >
-                        {row.status}
-                      </Paper>
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <Button
-                        onClick={handleOnClick(row.orderId)}
-                        variant="contained"
-                        sx={{ fontWeight: "550" }}
-                      >
-                        View Details
-                      </Button>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
+                {mappedData?.length === 0 ? (
+                  <StyledTableCell align="center" colSpan={8}>
+                    <Inventory2 fontSize="large" />
+                    {role === customerRole ? (
+                      <Typography>You havn't placed Any Orders</Typography>
+                    ) : (
+                      <Typography>You havn't received Any Orders</Typography>
+                    )}
+                  </StyledTableCell>
+                ) : (
+                  mappedData.map((row, index) => (
+                    <StyledTableRow key={index}>
+                      <StyledTableCell>{row.orderId}</StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.serviceName}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.name}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.placedOn}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {row.dueDate}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        ₹ {row.price}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Paper
+                          elevation={10}
+                          sx={{
+                            backgroundColor: getColor(row.status, isLightTheme),
+                            color: isLightTheme ? "white" : "black",
+                            fontWeight: "700",
+                            p: 1,
+                          }}
+                        >
+                          {row.status}
+                        </Paper>
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <Button
+                          onClick={handleOnClick(row.orderId)}
+                          variant="contained"
+                          sx={{ fontWeight: "550" }}
+                        >
+                          View Details
+                        </Button>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableContainer>

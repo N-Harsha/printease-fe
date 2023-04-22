@@ -67,7 +67,13 @@ function MenuDrawer({ handleDrawerClose, open }) {
       </DrawerHeader>
       <Divider />
       <List>
-        <ListItem disablePadding onClick={() => navigate("/dashboard")}>
+        <ListItem
+          disablePadding
+          onClick={() => {
+            navigate("/dashboard");
+            handleDrawerClose();
+          }}
+        >
           <ListItemButton>
             <ListItemIcon>
               <DashboardIcon />
@@ -76,7 +82,13 @@ function MenuDrawer({ handleDrawerClose, open }) {
           </ListItemButton>
         </ListItem>
 
-        <ListItem disablePadding onClick={() => navigate("/orders")}>
+        <ListItem
+          disablePadding
+          onClick={() => {
+            navigate("/orders");
+            handleDrawerClose();
+          }}
+        >
           <ListItemButton>
             <ListItemIcon>
               <OrdersIcon />
@@ -85,7 +97,13 @@ function MenuDrawer({ handleDrawerClose, open }) {
           </ListItemButton>
         </ListItem>
         {role === customerRole && (
-          <ListItem disablePadding onClick={() => navigate("/services")}>
+          <ListItem
+            disablePadding
+            onClick={() => {
+              navigate("/services");
+              handleDrawerClose();
+            }}
+          >
             <ListItemButton>
               <ListItemIcon>
                 <CreateOrdersIcon />
@@ -95,7 +113,13 @@ function MenuDrawer({ handleDrawerClose, open }) {
           </ListItem>
         )}
         {role === serviceProviderRole && (
-          <ListItem disablePadding onClick={() => navigate("/services")}>
+          <ListItem
+            disablePadding
+            onClick={() => {
+              navigate("/services");
+              handleDrawerClose();
+            }}
+          >
             <ListItemButton>
               <ListItemIcon>
                 <ServiceIcon />
