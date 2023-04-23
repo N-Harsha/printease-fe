@@ -22,7 +22,7 @@ const ServiceConfig = lazy(() => import("./pages/ServiceConfig"));
 const Orders = lazy(() => import("./pages/Orders"));
 const OrderDetails = lazy(() => import("./pages/OrderDetails"));
 const NotFoundPage = lazy(() => import("./pages/error/404Page"));
-const PlaceOrder = lazy(() => import("./pages/placeOrder"));
+const PlaceOrder = lazy(() => import("./pages/PlaceOrder"));
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
