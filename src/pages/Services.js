@@ -10,7 +10,7 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import { useMutation, useQuery } from "react-query";
+import { useQuery } from "react-query";
 import { api } from "../utils/APIMethods";
 import { getAllServicesApi, serviceProviderRole } from "../constants";
 import { useNavigate } from "react-router-dom";
@@ -31,7 +31,7 @@ const Services = () => {
   });
   useEffect(() => {
     refetch();
-  }, [user]);
+  }, [user, refetch]);
   return (
     <>
       {isLoading && <LinearProgress />}
@@ -87,7 +87,7 @@ const Services = () => {
                       if (role === serviceProviderRole) {
                         navigate(`/services/${service.id}`);
                       } else {
-                        navigate(`/placeOrder`);
+                        navigate(`/placeOrder/${service.id}`);
                       }
                     }}
                   >

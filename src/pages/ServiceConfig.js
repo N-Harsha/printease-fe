@@ -134,7 +134,7 @@ const Service = () => {
     mutationFn: (body) =>
       api(
         {
-          url: createAssociatedServiceApi(serviceId),
+          url: createAssociatedServiceApi,
           method: "POST",
           body,
         },
@@ -144,39 +144,39 @@ const Service = () => {
       refetch();
     },
   });
-  const {
-    mutate: editAssociatedService,
-    isLoading: editAssociatedServiceIsLoading,
-  } = useMutation(["EditAssociatedService"], {
-    mutationFn: (body) =>
-      api(
-        {
-          url: editAssociatedServiceApi,
-          method: "PUT",
-          body,
-        },
-        user
-      ),
-    onSuccess: (data) => {
-      refetch();
-    },
-  });
-  const {
-    mutate: deleteAssociatedService,
-    isLoading: deleteAssociatedServiceIsLoading,
-  } = useMutation(["DeleteAssociatedService"], {
-    mutationFn: (associatedServiceId) =>
-      api(
-        {
-          url: deleteAssociatedServiceApi(associatedServiceId),
-          method: "DELETE",
-        },
-        user
-      ),
-    onSuccess: (data) => {
-      refetch();
-    },
-  });
+  const { mutate: editAssociatedService } = useMutation(
+    ["EditAssociatedService"],
+    {
+      mutationFn: (body) =>
+        api(
+          {
+            url: editAssociatedServiceApi,
+            method: "PUT",
+            body,
+          },
+          user
+        ),
+      onSuccess: (data) => {
+        refetch();
+      },
+    }
+  );
+  const { mutate: deleteAssociatedService } = useMutation(
+    ["DeleteAssociatedService"],
+    {
+      mutationFn: (associatedServiceId) =>
+        api(
+          {
+            url: deleteAssociatedServiceApi(associatedServiceId),
+            method: "DELETE",
+          },
+          user
+        ),
+      onSuccess: (data) => {
+        refetch();
+      },
+    }
+  );
 
   const handleBindingType = (event) => {
     const {
@@ -229,8 +229,8 @@ const Service = () => {
     return (
       <>
         {Object.keys(data).map((combi, index) => {
-          if (combi === "id" || combi === "price") return;
-          if (!data[combi]) return null;
+          if (combi === "id" || combi === "price" || !data[combi]) return null;
+
           return (
             <Grid
               item
@@ -325,9 +325,17 @@ const Service = () => {
   };
   const handleModalSubmit = () => {
     if (currentAction === "Add") {
-      addNewAssociatedService({ ...chosenCombination, price: getPrice() });
+      addNewAssociatedService({
+        ...chosenCombination,
+        price: getPrice(),
+        printServiceId: serviceId,
+      });
     } else if (currentAction === "Edit") {
-      editAssociatedService({ ...chosenCombination, price: getPrice() });
+      editAssociatedService({
+        ...chosenCombination,
+        price: getPrice(),
+        printServiceId: serviceId,
+      });
     } else {
       deleteAssociatedService(chosenCombination.id);
     }
@@ -558,8 +566,7 @@ const Service = () => {
                     sx={{ justifyContent: "space-between", width: "80%" }}
                   >
                     {Object.keys(combination).map((combi, indexj) => {
-                      if (combi == "id") return;
-                      if (!combination[combi]) return null;
+                      if (!combination[combi] || combi === "id") return null;
                       return (
                         <Grid item ml={3} key={indexj}>
                           <Typography

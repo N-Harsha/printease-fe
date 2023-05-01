@@ -1,4 +1,3 @@
-import { useTheme } from "styled-components";
 import { customerRole, statusList } from "../constants";
 
 export function formatDate(isoDateString, giveLineBreak = true) {
@@ -102,4 +101,12 @@ export function showActions(role, currStatus) {
   )
     return false;
   return true;
+}
+
+export function roundToTwoDecimals(num) {
+  return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+export function removeLastChar(str) {
+  return str.slice(0, -1);
 }

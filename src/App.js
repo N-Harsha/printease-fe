@@ -13,6 +13,7 @@ import MenuDrawer from "./components/MenuDrawer";
 import { customerRole, drawerWidth, serviceProviderRole } from "./constants";
 import { auth } from "./features/Login.reducer";
 import PrivateRoutes from "./utils/PrivateRoutes";
+import PlaceOrder from "./pages/PlaceOrder";
 
 const Login = lazy(() => import("./pages/Login"));
 const SignUp = lazy(() => import("./pages/SignUp"));
@@ -22,7 +23,7 @@ const ServiceConfig = lazy(() => import("./pages/ServiceConfig"));
 const Orders = lazy(() => import("./pages/Orders"));
 const OrderDetails = lazy(() => import("./pages/OrderDetails"));
 const NotFoundPage = lazy(() => import("./pages/error/404Page"));
-const PlaceOrder = lazy(() => import("./pages/PlaceOrder"));
+// const PlaceOrder = lazy(() => import("./pages/PlaceOrder"));
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -77,7 +78,7 @@ function App() {
                   <Route path="/orders" element={<Orders />} />
                   <Route path="/orders/:id" element={<OrderDetails />} />
                   {user.role === customerRole && (
-                    <Route path="/placeOrder" element={<PlaceOrder />} />
+                    <Route path="/placeOrder/:id" element={<PlaceOrder />} />
                   )}
                   <Route path="/" element={<Home />} />
                 </Route>
