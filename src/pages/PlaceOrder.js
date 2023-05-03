@@ -41,6 +41,7 @@ import {
 import { api } from "../utils/APIMethods";
 import DropDownRow from "../components/DropDownRow";
 import { removeLastChar, roundToTwoDecimals } from "../utils/util";
+import FileInput from "../components/FileInput";
 
 const data = [
   {
@@ -636,9 +637,9 @@ function PlaceOrder() {
     }
   );
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-    getPages(e.target.files[0]);
+  const handleFileChange = (file) => {
+    setSelectedFile(file);
+    getPages(file);
   };
   const handleFileRemoval = () => {
     setSelectedFile(null);
@@ -763,22 +764,8 @@ function PlaceOrder() {
       <Box sx={{ "&>*": { mt: "15px !important" } }}>
         {selectedFile === null ? (
           <>
-            <Button
-              variant="contained"
-              startIcon={<CloudUpload />}
-              sx={{ p: 2 }}
-              onClick={() => {
-                document.querySelector(".orderFileInput").click();
-              }}
-            >
-              Upload A File
-            </Button>
-            <input
-              type="file"
-              style={{ display: "none" }}
-              className="orderFileInput"
-              onChange={handleFileChange}
-            ></input>
+            {/* TODO : add the new file input here. */}
+            <FileInput handleFileChange={handleFileChange} />
           </>
         ) : (
           <>
