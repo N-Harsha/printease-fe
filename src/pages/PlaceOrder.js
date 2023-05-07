@@ -155,7 +155,8 @@ function PlaceOrder() {
   const handleModalClose = () => {
     setSelectedConfig(null);
     setShowDialogDropDown(false);
-    //TODO: this can be alternative meanign that if the user wants to retails the quntity then just comment this part
+    //TODO: this can work in two ways,
+    //  meaning that if the user wants to retain the quntity then just comment this part
     setQuantity(1);
   };
   const processConfig = (data) => {
