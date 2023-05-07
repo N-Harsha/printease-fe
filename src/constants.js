@@ -44,6 +44,6 @@ export const serviceConfig = [
   { key: "printSides", label: "Print Sides" },
   { key: "paperSizes", label: "Paper Sizes" },
   { key: "paperTypes", label: "Paper Types" },
-  { key: "orientations", label: "Orientation" },
+  { key: "orientations", label: "Orientations" },
   { key: "bindingTypes", label: "Print Types" },
 ];

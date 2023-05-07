@@ -1,15 +1,17 @@
-import { Close, CloudUpload } from "@mui/icons-material";
+import { Close } from "@mui/icons-material";
 import {
   Box,
   Button,
   Checkbox,
   Collapse,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
   Grid,
   IconButton,
+  Input,
   InputLabel,
   LinearProgress,
   ListItemText,
@@ -17,14 +19,16 @@ import {
   OutlinedInput,
   Paper,
   Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  TextareaAutosize,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -42,545 +46,13 @@ import { api } from "../utils/APIMethods";
 import DropDownRow from "../components/DropDownRow";
 import { removeLastChar, roundToTwoDecimals } from "../utils/util";
 import FileInput from "../components/FileInput";
+import { selectIsLightTheme } from "../features/Theme.reducer";
 
-const data = [
-  {
-    associatedServices: [
-      {
-        id: 1,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.3,
-      },
-      {
-        id: 2,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 2,
-          type: "Color",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.1,
-      },
-      {
-        id: 3,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 2,
-          type: "Double",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.8,
-      },
-      {
-        id: 4,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 2,
-          type: "Double",
-        },
-        printType: {
-          id: 2,
-          type: "Color",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 3.1,
-      },
-      {
-        id: 5,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 2,
-          type: "Matte",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.1,
-      },
-      {
-        id: 6,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 2,
-          type: "Matte",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 2,
-          type: "Color",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.3,
-      },
-      {
-        id: 7,
-        orientation: {
-          id: 2,
-          type: "Landscape",
-        },
-        paperSize: {
-          id: 3,
-          type: "A3",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.7,
-      },
-      {
-        id: 8,
-        orientation: {
-          id: 2,
-          type: "Landscape",
-        },
-        paperSize: {
-          id: 3,
-          type: "A3",
-        },
-        paperType: {
-          id: 2,
-          type: "Matte",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.4,
-      },
-      {
-        id: 9,
-        orientation: {
-          id: 2,
-          type: "Landscape",
-        },
-        paperSize: {
-          id: 2,
-          type: "A2",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.5,
-      },
-      {
-        id: 10,
-        orientation: {
-          id: 2,
-          type: "Landscape",
-        },
-        paperSize: {
-          id: 2,
-          type: "A2",
-        },
-        paperType: {
-          id: 2,
-          type: "Matte",
-        },
-        printSide: {
-          id: 2,
-          type: "Double",
-        },
-        printType: {
-          id: 2,
-          type: "Color",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.4,
-      },
-    ],
-    serviceProviderId: 1,
-    serviceProviderName: "John Doe",
-    distance: 8.3004181273581,
-  },
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
 
-  {
-    associatedServices: [
-      {
-        id: 1,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.3,
-      },
-      {
-        id: 2,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 2,
-          type: "Color",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.1,
-      },
-      {
-        id: 3,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 2,
-          type: "Double",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.8,
-      },
-      {
-        id: 4,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 2,
-          type: "Double",
-        },
-        printType: {
-          id: 2,
-          type: "Color",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 3.1,
-      },
-      {
-        id: 5,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 2,
-          type: "Matte",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.1,
-      },
-      {
-        id: 6,
-        orientation: {
-          id: 1,
-          type: "Portrait",
-        },
-        paperSize: {
-          id: 4,
-          type: "A4",
-        },
-        paperType: {
-          id: 2,
-          type: "Matte",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 2,
-          type: "Color",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.3,
-      },
-      {
-        id: 7,
-        orientation: {
-          id: 2,
-          type: "Landscape",
-        },
-        paperSize: {
-          id: 3,
-          type: "A3",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.7,
-      },
-      {
-        id: 8,
-        orientation: {
-          id: 2,
-          type: "Landscape",
-        },
-        paperSize: {
-          id: 3,
-          type: "A3",
-        },
-        paperType: {
-          id: 2,
-          type: "Matte",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.4,
-      },
-      {
-        id: 9,
-        orientation: {
-          id: 2,
-          type: "Landscape",
-        },
-        paperSize: {
-          id: 2,
-          type: "A2",
-        },
-        paperType: {
-          id: 1,
-          type: "Glossy",
-        },
-        printSide: {
-          id: 1,
-          type: "Single",
-        },
-        printType: {
-          id: 1,
-          type: "Black and White",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.5,
-      },
-      {
-        id: 10,
-        orientation: {
-          id: 2,
-          type: "Landscape",
-        },
-        paperSize: {
-          id: 2,
-          type: "A2",
-        },
-        paperType: {
-          id: 2,
-          type: "Matte",
-        },
-        printSide: {
-          id: 2,
-          type: "Double",
-        },
-        printType: {
-          id: 2,
-          type: "Color",
-        },
-        bindingType: null,
-        printServiceId: null,
-        price: 2.4,
-      },
-    ],
-    serviceProviderId: 2,
-    serviceProviderName: "James Trigger",
-    // todo make this as the service provider shop name
-    distance: 15.004181273581,
-  },
-];
+const data = [];
 
 function PlaceOrder() {
   const initalConfig = () =>
@@ -590,6 +62,7 @@ function PlaceOrder() {
   const [configfilters, setConfigFilters] = useState(initalConfig);
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [showDialogDropDown, setShowDialogDropDown] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const params = useParams();
   const user = useSelector(auth);
@@ -597,6 +70,9 @@ function PlaceOrder() {
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
+
+  const isLightTheme = useSelector(selectIsLightTheme);
+
   const MenuProps = {
     PaperProps: {
       style: {
@@ -634,6 +110,11 @@ function PlaceOrder() {
       onSuccess: (data) => {
         setFilePages(data);
       },
+      onError: (error) => {
+        console.log(error);
+        //later display proper message to the user..!
+        handleFileRemoval();
+      },
     }
   );
 
@@ -659,24 +140,48 @@ function PlaceOrder() {
   const handleAssociateServiceSelection = (outerIdx, innerIdx) => {
     setSelectedConfig([outerIdx, innerIdx]);
   };
+  const handleDecrement = () => {
+    if (quantity > 1) {
+      setQuantity((prev) => prev - 1);
+    }
+  };
+
+  const handleIncrement = () => {
+    if (quantity < 20) {
+      setQuantity((prev) => prev + 1);
+    }
+  };
+
   const handleModalClose = () => {
     setSelectedConfig(null);
     setShowDialogDropDown(false);
+    //TODO: this can be alternative meanign that if the user wants to retails the quntity then just comment this part
+    setQuantity(1);
   };
   const processConfig = (data) => {
-    return serviceConfig.map((item, idx) =>
-      data[removeLastChar(item.key)] !== null ? (
-        <TableRow key={idx}>
+    return (
+      <>
+        {serviceConfig.map((item, idx) =>
+          data[removeLastChar(item.key)] !== null ? (
+            <TableRow key={idx}>
+              <TableCell scope="row" component={"th"}>
+                {removeLastChar(item.label)}
+              </TableCell>
+              <TableCell align="left">
+                {data[removeLastChar(item.key)].type}
+              </TableCell>
+            </TableRow>
+          ) : (
+            ""
+          )
+        )}
+        <TableRow>
           <TableCell scope="row" component={"th"}>
-            {removeLastChar(item.label)}
+            Price
           </TableCell>
-          <TableCell align="left">
-            {data[removeLastChar(item.key)].type}
-          </TableCell>
+          <TableCell>₹ {data["price"]}</TableCell>
         </TableRow>
-      ) : (
-        ""
-      )
+      </>
     );
   };
 
@@ -686,14 +191,26 @@ function PlaceOrder() {
     ) : (
       <Table>
         <TableRow>
-          <TableCell sx={{ fontWeight: "bold" }} align="left">
-            Service Provider Name
+          <TableCell align="left">
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold" }}
+              display={"inline"}
+            >
+              Service Provider Name
+            </Typography>
           </TableCell>
           <TableCell>{data[selectedConfig[0]].serviceProviderName}</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell sx={{ fontWeight: "bold" }} align="left">
-            Distance
+          <TableCell align="left">
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold" }}
+              display={"inline"}
+            >
+              Distance
+            </Typography>
           </TableCell>
           <TableCell>
             {roundToTwoDecimals(data[selectedConfig[0]].distance) + " "}Km
@@ -702,21 +219,33 @@ function PlaceOrder() {
         {selectedFile !== null && (
           <>
             <TableRow>
-              <TableCell sx={{ fontWeight: "bold" }} align="left">
-                Selected file Name
+              <TableCell align="left">
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}
+                  display={"inline"}
+                >
+                  Selected file Name
+                </Typography>
               </TableCell>
               <TableCell>{selectedFile.name}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell sx={{ fontWeight: "bold" }} align="left">
-                No. of pages
+              <TableCell align="left">
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold" }}
+                  display={"inline"}
+                >
+                  No. of pages
+                </Typography>
               </TableCell>
               <TableCell>{filePages}</TableCell>
             </TableRow>
           </>
         )}
         <TableRow onClick={() => setShowDialogDropDown((prev) => !prev)}>
-          <TableCell colSpan={2} sx={{ fontWeight: "bold" }}>
+          <TableCell colSpan={2}>
             <IconButton sx={{ pl: 0 }}>
               {showDialogDropDown ? (
                 <KeyboardArrowUpIcon />
@@ -724,7 +253,13 @@ function PlaceOrder() {
                 <KeyboardArrowDownIcon />
               )}
             </IconButton>
-            View Order Configuration
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold" }}
+              display={"inline"}
+            >
+              View Order Configuration
+            </Typography>
           </TableCell>
         </TableRow>
         <TableRow>
@@ -739,15 +274,117 @@ function PlaceOrder() {
           </TableCell>
         </TableRow>
         <TableRow>
-          <TableCell sx={{ fontWeight: "bold" }} align="left">
-            Total Cost
+          <TableCell>
+            <InputLabel
+              sx={{ fontWeight: "bold", color: "black" }}
+              htmlFor="quantity-input"
+            >
+              Quantity
+            </InputLabel>
           </TableCell>
           <TableCell>
-            {"₹ " +
-              roundToTwoDecimals(
-                data[selectedConfig[0]].associatedServices[selectedConfig[1]]
-                  .price * filePages ?? 1
-              )}
+            <Stack direction={"row"} alignItems={"center"} spacing={1}>
+              <Button
+                variant="contained"
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  minWidth: 0,
+                  width: 32,
+                  height: 32,
+                  p: 0,
+                }}
+                onClick={handleDecrement}
+              >
+                -
+              </Button>
+              <Input
+                type="number"
+                sx={{ width: "10%" }}
+                value={quantity}
+                id="quantity-input"
+                inputProps={{
+                  min: 1,
+                  max: 20,
+                  style: { textAlign: "center" },
+                }}
+                onChange={(event) => {
+                  const value = parseInt(event.target.value);
+                  if (value >= 1 && value <= 20) {
+                    setQuantity(value);
+                  }
+                }}
+              />
+              <Button
+                variant="contained"
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  minWidth: 0,
+                  width: 32,
+                  height: 32,
+                  p: 0,
+                }}
+                onClick={handleIncrement}
+              >
+                +
+              </Button>
+            </Stack>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+            <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+              Due Date
+            </Typography>
+          </TableCell>
+          <TableCell>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <MobileDateTimePicker />
+            </LocalizationProvider>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>
+            <InputLabel
+              sx={{ fontWeight: "bold", color: "grey" }}
+              htmlFor="comment-input"
+            >
+              Comment (optional)
+            </InputLabel>
+          </TableCell>
+          <TableCell>
+            <textarea
+              rows={3}
+              style={{ width: "82%" }}
+              id="comment-input"
+            ></textarea>
+          </TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell align="left">
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold" }}
+              display={"inline"}
+            >
+              Total Cost
+            </Typography>
+          </TableCell>
+          <TableCell align="right">
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: "bold" }}
+              display={"inline"}
+            >
+              {"₹ " +
+                roundToTwoDecimals(
+                  data[selectedConfig[0]].associatedServices[selectedConfig[1]]
+                    .price *
+                    quantity *
+                    filePages ?? 1
+                )}
+            </Typography>
           </TableCell>
         </TableRow>
       </Table>
@@ -773,12 +410,42 @@ function PlaceOrder() {
               onClose={handleModalClose}
               open={selectedConfig !== null}
               fullWidth
+              // fullScreen
             >
-              <DialogTitle textAlign={"center"}>
+              <DialogTitle textAlign={"center"} fontWeight={"bold"}>
                 Confirm Order Details
               </DialogTitle>
-              <DialogContent>{parseConfiguratoin()}</DialogContent>
+              <DialogContent sx={{ fontSize: "14px", pb: "16px" }}>
+                {parseConfiguratoin()}
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "error.main",
+                    color: !isLightTheme ? "black" : "white",
+                    ":hover": { backgroundColor: "error.dark" },
+                    mr: "8px",
+                    minWidth: "90px",
+                  }}
+                  onClick={handleModalClose}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "success.main",
+                    color: !isLightTheme ? "black" : "white",
+                    "&:hover": { backgroundColor: "success.dark" },
+                    minWidth: "90px",
+                  }}
+                >
+                  Confirm
+                </Button>
+              </DialogActions>
             </Dialog>
+
             <Paper elevation={4}>
               <Table
                 sx={{
