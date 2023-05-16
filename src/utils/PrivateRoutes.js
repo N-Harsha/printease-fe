@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Navigate, Outlet, Route } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { isLoggedIn } from "../features/Login.reducer";
 
 const PrivateRoutes = ({ component: Component, ...rest }) => {
