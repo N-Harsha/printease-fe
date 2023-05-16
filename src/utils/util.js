@@ -110,3 +110,10 @@ export function roundToTwoDecimals(num) {
 export function removeLastChar(str) {
   return str.slice(0, -1);
 }
+
+export function zeroAdder(num) {
+  if (String(num).length < 2) {
+    return "0" + num;
+  }
+  return num;
+}

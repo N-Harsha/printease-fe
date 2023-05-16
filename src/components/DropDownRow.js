@@ -38,6 +38,9 @@ function DropDownRow(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
+          {row.serviceProviderBusinessName}
+        </TableCell>
+        <TableCell component="th" scope="row">
           {row.serviceProviderName}
         </TableCell>
         <TableCell align="right">

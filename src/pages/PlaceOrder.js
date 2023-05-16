@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Collapse,
   Dialog,
   DialogActions,
@@ -19,40 +20,43 @@ import {
   OutlinedInput,
   Paper,
   Select,
+  Snackbar,
   Stack,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
-  TextareaAutosize,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { auth } from "../features/Login.reducer";
 
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 import {
+  createOrderApi,
   noOfPagesApi,
+  recommendedServiceProvidersApi,
   serviceConfig,
   specificServiceDetailsApi,
 } from "../constants";
 import { api } from "../utils/APIMethods";
 import DropDownRow from "../components/DropDownRow";
-import { removeLastChar, roundToTwoDecimals } from "../utils/util";
+import { removeLastChar, roundToTwoDecimals, zeroAdder } from "../utils/util";
 import FileInput from "../components/FileInput";
 import { selectIsLightTheme } from "../features/Theme.reducer";
 
+import MuiAlert from "@mui/material/Alert";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { MobileDateTimePicker } from "@mui/x-date-pickers/MobileDateTimePicker";
-
-const data = [];
+import dayjs from "dayjs";
 
 function PlaceOrder() {
   const initalConfig = () =>
@@ -63,15 +67,56 @@ function PlaceOrder() {
   const [selectedConfig, setSelectedConfig] = useState(null);
   const [showDialogDropDown, setShowDialogDropDown] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [coOrd, setCoOrd] = useState({ longitude: "", latitude: "" });
+  const [dueDate, setDueDate] = useState(null);
+  const [erroMessage, setErrorMessage] = useState(null);
 
   const params = useParams();
   const user = useSelector(auth);
   const serviceId = params.id;
+  const navigation = useNavigate();
+  const commentRef = useRef();
+
+  const recomendationParamString = useCallback(
+    Object.entries({
+      ...coOrd,
+      ...serviceConfig.reduce(
+        (acc, curr) => ({
+          ...acc,
+          [curr.key.slice(0, -1) + "Ids"]: configfilters[curr.key],
+        }),
+        {}
+      ),
+      printServiceId: serviceId,
+    })
+      .map(([key, value]) => {
+        if (Array.isArray(value)) {
+          return `${encodeURIComponent(key)}=${value
+            .map((item) => `${encodeURIComponent(item)}`)
+            .join(",")}`;
+        } else {
+          return `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+        }
+      })
+      .join("&"),
+    [coOrd, configfilters, serviceId]
+  );
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
 
   const isLightTheme = useSelector(selectIsLightTheme);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setCoOrd({
+          longitude: position.coords.longitude,
+          latitude: position.coords.latitude,
+        });
+      });
+    }
+  }, []);
 
   const MenuProps = {
     PaperProps: {
@@ -82,19 +127,18 @@ function PlaceOrder() {
     },
   };
 
-  const {
-    data: serviceDetails,
-    isLoading: serviceDetailsLoading,
-    refetch,
-  } = useQuery("SpecificServiceQuery", {
-    queryFn: () => api({ url: specificServiceDetailsApi(serviceId) }, user),
-    onError: (error) => {
-      console.log(error);
-    },
-    onSuccess: (data) => {
-      console.log(data);
-    },
-  });
+  const { data: serviceDetails, isLoading: serviceDetailsLoading } = useQuery(
+    "SpecificServiceQuery",
+    {
+      queryFn: () => api({ url: specificServiceDetailsApi(serviceId) }, user),
+      onError: (error) => {
+        console.log(error);
+      },
+      onSuccess: (data) => {
+        console.log(data);
+      },
+    }
+  );
 
   const { mutate: getPages, isLoading: loadingNoOfPages } = useMutation(
     ["NoOfPages"],
@@ -112,8 +156,42 @@ function PlaceOrder() {
       },
       onError: (error) => {
         console.log(error);
-        //later display proper message to the user..!
         handleFileRemoval();
+      },
+    }
+  );
+
+  const { mutate: createOrderMutation, isLoading: isOrderCreating } =
+    useMutation(["createOrder"], {
+      mutationFn: (body) => {
+        return api(
+          { url: createOrderApi, method: "POST", body, isFormData: true },
+          user
+        );
+      },
+      onSuccess: (data) => {
+        console.log(data);
+        navigation("/orders");
+      },
+      onError: (error) => {
+        console.log(error);
+        setErrorMessage(error.message);
+      },
+    });
+
+  const { data, isLoading: recommendationIsLoading } = useQuery(
+    ["fetchRecomendations", coOrd, serviceId, configfilters],
+    {
+      queryFn: () =>
+        api(
+          { url: recommendedServiceProvidersApi + recomendationParamString },
+          user
+        ),
+      onError: (error) => {
+        console.log(error);
+      },
+      onSuccess: (data) => {
+        console.log(data);
       },
     }
   );
@@ -124,6 +202,7 @@ function PlaceOrder() {
   };
   const handleFileRemoval = () => {
     setSelectedFile(null);
+    setConfigFilters(initalConfig());
     setFilePages(1);
   };
 
@@ -158,7 +237,9 @@ function PlaceOrder() {
     //TODO: this can work in two ways,
     //  meaning that if the user wants to retain the quntity then just comment this part
     setQuantity(1);
+    setDueDate(null);
   };
+
   const processConfig = (data) => {
     return (
       <>
@@ -185,9 +266,10 @@ function PlaceOrder() {
       </>
     );
   };
+  console.log(dueDate);
 
-  const parseConfiguratoin = () => {
-    return selectedConfig === null ? (
+  const parseConfiguratoin =
+    selectedConfig === null ? (
       ""
     ) : (
       <Table>
@@ -277,7 +359,10 @@ function PlaceOrder() {
         <TableRow>
           <TableCell>
             <InputLabel
-              sx={{ fontWeight: "bold", color: "black" }}
+              sx={{
+                fontWeight: "bold",
+                color: isLightTheme ? "black" : "white",
+              }}
               htmlFor="quantity-input"
             >
               Quantity
@@ -341,14 +426,30 @@ function PlaceOrder() {
           </TableCell>
           <TableCell>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <MobileDateTimePicker />
+              <MobileDateTimePicker
+                minDateTime={dayjs().add(30, "minute")}
+                onChange={(date) =>
+                  date === null
+                    ? null
+                    : setDueDate(
+                        `${zeroAdder(date.$y)}-${zeroAdder(
+                          date.$M + 1
+                        )}-${zeroAdder(date.$D)}T${zeroAdder(
+                          date.$H
+                        )}:${zeroAdder(date.$m)}:${zeroAdder(date.$s)}`
+                      )
+                }
+              />
             </LocalizationProvider>
           </TableCell>
         </TableRow>
         <TableRow>
           <TableCell>
             <InputLabel
-              sx={{ fontWeight: "bold", color: "grey" }}
+              sx={{
+                fontWeight: "bold",
+                color: isLightTheme ? "black" : "white",
+              }}
               htmlFor="comment-input"
             >
               Comment (optional)
@@ -359,6 +460,7 @@ function PlaceOrder() {
               rows={3}
               style={{ width: "82%" }}
               id="comment-input"
+              ref={commentRef}
             ></textarea>
           </TableCell>
         </TableRow>
@@ -390,12 +492,43 @@ function PlaceOrder() {
         </TableRow>
       </Table>
     );
+
+  const handlePlaceOrder = () => {
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append(
+      "associatedServiceId",
+      data[selectedConfig[0]].associatedServices[selectedConfig[1]].id
+    );
+    formData.append("comment", commentRef.current.value);
+    if (dueDate) formData.append("dueDate", dueDate);
+    formData.append("quantity", quantity);
+    createOrderMutation(formData);
   };
 
   return serviceDetailsLoading ? (
     <LinearProgress />
   ) : (
     <>
+      <Snackbar
+        autoHideDuration={1400}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={erroMessage}
+        onClose={() => setErrorMessage(null)}
+        key={"top" + "center"}
+      >
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          sx={{ width: "100%" }}
+          severity="error"
+          alignItems="center"
+        >
+          {erroMessage?.map((item, idx) => (
+            <li key={idx}>{item}</li>
+          ))}
+        </MuiAlert>
+      </Snackbar>
       <Typography variant="h5">
         Place Orders ({serviceDetails?.serviceName})
       </Typography>
@@ -417,7 +550,7 @@ function PlaceOrder() {
                 Confirm Order Details
               </DialogTitle>
               <DialogContent sx={{ fontSize: "14px", pb: "16px" }}>
-                {parseConfiguratoin()}
+                {parseConfiguratoin}
               </DialogContent>
               <DialogActions>
                 <Button
@@ -433,17 +566,18 @@ function PlaceOrder() {
                 >
                   Cancel
                 </Button>
-                <Button
+                <LoadingButton
                   variant="contained"
                   sx={{
-                    backgroundColor: "success.main",
                     color: !isLightTheme ? "black" : "white",
-                    "&:hover": { backgroundColor: "success.dark" },
                     minWidth: "90px",
                   }}
+                  color="success"
+                  onClick={handlePlaceOrder}
+                  loading={isOrderCreating}
                 >
                   Confirm
-                </Button>
+                </LoadingButton>
               </DialogActions>
             </Dialog>
 
@@ -460,7 +594,7 @@ function PlaceOrder() {
                     <TableCell>File Name</TableCell>
                     <TableCell>File Type</TableCell>
                     <TableCell>File Size</TableCell>
-                    {!loadingNoOfPages && <TableCell>No. of Pages</TableCell>}
+                    <TableCell>No. of Pages</TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 </TableHead>
@@ -471,7 +605,13 @@ function PlaceOrder() {
                     <TableCell>
                       {Math.round(selectedFile.size / 1000) + " "}KB
                     </TableCell>
-                    {!loadingNoOfPages && <TableCell>{filePages}</TableCell>}
+                    <TableCell>
+                      {loadingNoOfPages ? (
+                        <CircularProgress size={25} />
+                      ) : (
+                        filePages
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Button
                         variant="contained"
@@ -507,16 +647,25 @@ function PlaceOrder() {
                             multiple
                             value={configfilters[item.key]}
                             input={<OutlinedInput label={item.label} />}
-                            renderValue={(selected) => selected.join(", ")}
+                            renderValue={(selected) =>
+                              selected
+                                .map(
+                                  (selectedIdx) =>
+                                    serviceDetails[item.key].find(
+                                      (item) => item.id === selectedIdx
+                                    ).type
+                                )
+                                .join(", ")
+                            }
                             MenuProps={MenuProps}
                             onChange={(e) => handleSelectChange(item.key, e)}
                           >
                             {serviceDetails[item.key].map((listItem) => (
-                              <MenuItem key={listItem.id} value={listItem.type}>
+                              <MenuItem key={listItem.id} value={listItem.id}>
                                 <Checkbox
                                   checked={
                                     configfilters[item.key]?.indexOf(
-                                      listItem.type
+                                      listItem.id
                                     ) > -1
                                   }
                                 />
@@ -550,20 +699,25 @@ function PlaceOrder() {
               <TableHead>
                 <TableRow>
                   <TableCell></TableCell>
-                  <TableCell>Name</TableCell>
+                  <TableCell>Bussiness Name</TableCell>
+                  <TableCell>Service Provider Name</TableCell>
                   <TableCell align="right">Distance</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data.map((item, idx) => (
-                  <DropDownRow
-                    row={item}
-                    serviceDetails={serviceDetails}
-                    noOfPages={filePages}
-                    outterIdx={idx}
-                    handleSelection={handleAssociateServiceSelection}
-                  />
-                ))}
+                {recommendationIsLoading ? (
+                  <CircularProgress />
+                ) : (
+                  data.map((item, idx) => (
+                    <DropDownRow
+                      row={item}
+                      serviceDetails={serviceDetails}
+                      noOfPages={filePages}
+                      outterIdx={idx}
+                      handleSelection={handleAssociateServiceSelection}
+                    />
+                  ))
+                )}
               </TableBody>
             </Table>
           </>

@@ -29,6 +29,11 @@ export const specificServiceDetailsApi = (id) => baseUrl + `/v1/services/${id}`;
 
 export const noOfPagesApi = baseUrl + `/v1/files/pages`;
 
+export const createOrderApi = baseUrl + "/v1/orders";
+
+export const recommendedServiceProvidersApi =
+  baseUrl + "/v1/associatedServices/recommended?";
+
 //general constants
 export const primaryColor = "#ff6c37";
 
@@ -45,5 +50,5 @@ export const serviceConfig = [
   { key: "paperSizes", label: "Paper Sizes" },
   { key: "paperTypes", label: "Paper Types" },
   { key: "orientations", label: "Orientations" },
-  { key: "bindingTypes", label: "Print Types" },
+  { key: "bindingTypes", label: "Binding Types" },
 ];
